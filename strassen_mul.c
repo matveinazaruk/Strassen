@@ -1,7 +1,6 @@
 #include "strassen_mul.h"
 
 commonMultiply(fmpz_mat_t C, const fmpz_mat_t A, const fmpz_mat_t B){
-
     fmpz_mat_mul_classical(C, A, B);
 }
 
@@ -10,7 +9,7 @@ strassenMultiply(fmpz_mat_t C, const fmpz_mat_t A, const fmpz_mat_t B, fmpz size
     fmpz_mat_t h1, h2, p1, p2, p3, p4, p5, p6, p7;
     fmpz_mat_t a11, a12, a21, a22, b11, b12, b21, b22;
     h = size / 2;
-    if (h <= 2){
+    if (h <= 64){
         commonMultiply(C, A, B);
         return;
     }
@@ -47,37 +46,49 @@ strassenMultiply(fmpz_mat_t C, const fmpz_mat_t A, const fmpz_mat_t B, fmpz size
     copyElements(b21, B, 0, 0, h, 0, h);
     copyElements(b22, B, 0, 0, h, h, h);
 
+    //flint_printf("llalla");
     fmpz_mat_add(h1, a11, a22);
     fmpz_mat_add(h2, b11, b22);
     strassenMultiply(p1, h1, h2, h);
+
     fmpz_mat_add(h1, a21, a22);
-    strassenMultiply(p2, b11, h1, h);
+    strassenMultiply(p2, h1, b11, h);
+
     fmpz_mat_sub(h1, b12, b22);
     strassenMultiply(p3, a11, h1, h);
+
     fmpz_mat_sub(h1, b21, b11);
     strassenMultiply(p4, a22, h1, h);
+
     fmpz_mat_add(h1, a11, a12);
     strassenMultiply(p5, h1, b22, h);
-    fmpz_mat_add(h1, a21, a11);
+
+    fmpz_mat_sub(h1, a21, a11);
     fmpz_mat_add(h2, b11, b12);
     strassenMultiply(p6, h1, h2, h);
-    fmpz_mat_add(h1, a12, a22);
-    fmpz_mat_sub(h2, b21, b22);
+
+    fmpz_mat_sub(h1, a12, a22);
+    fmpz_mat_add(h2, b21, b22);
     strassenMultiply(p7, h1, h2, h);
 
 
+    //flint_printf("llalla");
     fmpz_mat_add(h1, p2, p4);
     copyElements(C, h1, h, 0, 0, 0, h);
+    //fmpz_mat_print_pretty(h1);
     fmpz_mat_add(h1, p3, p5);
     copyElements(C, h1, 0, h, 0, 0, h);
+    //fmpz_mat_print_pretty(h1);
     fmpz_mat_add(h1, p1, p4);
-    fmpz_mat_add(h1, h1, p7);
-    fmpz_mat_sub(h1, h1, p5);
+    fmpz_mat_add(h2, h1, p7);
+    fmpz_mat_sub(h1, h2, p5);
     copyElements(C, h1, 0, 0, 0, 0, h);
+    //fmpz_mat_print_pretty(h1);
     fmpz_mat_sub(h1, p1, p2);
     fmpz_mat_add(h2, p3, p6);
     fmpz_mat_add(h1, h1, h2);
     copyElements(C, h1, h, h, 0, 0, h);
+    //fmpz_mat_print_pretty(h1);
 
 
     {
