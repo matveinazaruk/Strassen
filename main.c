@@ -47,8 +47,10 @@ int main(void)
     }
 
     flint_randclear(rand);
-    fmpz_mat_clear ( A ) ;
-    fmpz_mat_clear ( B ) ;
+    fmpz_mat_clear (A) ;
+    fmpz_mat_clear (B) ;
+    fmpz_mat_clear (C) ;
+    fmpz_mat_clear (D) ;
 }
 
 
